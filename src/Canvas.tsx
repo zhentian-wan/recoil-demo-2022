@@ -1,16 +1,34 @@
-import {PageContainer} from './PageContainer'
+import {atom, useRecoilValue, useSetRecoilState} from 'recoil'
 import {Rectangle} from './components/Rectangle/Rectangle'
+import {EditProperties} from './EditProperties'
+import {PageContainer} from './PageContainer'
 import {Toolbar} from './Toolbar'
 
+export const selectElementAtom = atom<number | null>({
+    key: 'selectElement',
+    default: null,
+})
+
+export const elementsAtom = atom<number[]>({
+    key: 'elementsState',
+    default: [],
+})
+
 function Canvas() {
+    const elements = useRecoilValue(elementsAtom)
+    const setSelectedElement = useSetRecoilState(selectElementAtom)
+
     return (
         <PageContainer
             onClick={() => {
-                console.log('Deselect all elements!')
+                setSelectedElement(null)
             }}
         >
             <Toolbar />
-            <Rectangle />
+            <EditProperties />
+            {elements.map((id) => (
+                <Rectangle key={id} id={id} />
+            ))}
         </PageContainer>
     )
 }
