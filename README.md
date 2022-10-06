@@ -61,3 +61,24 @@ Benefits of Selectors:
 * Same API as Atoms
 * Shareable, self-containaed state
 
+```tsx
+export const editPropertiesState = selectorFamily<number, {path: string; id: number}>({
+    key: 'editPropertiesState',
+    get:
+        ({path, id}) =>
+        ({get}) => {
+            const element = get(elementAtom(id))
+            return lodash_get(element, path)
+        },
+    set:
+        ({path, id}) =>
+        ({get, set}, newValue) => {
+            const element = get(elementAtom(id))
+            const newElement = produce(element, (draft) => {
+                lodash_set(element, path, newValue)
+            })
+            set(elementAtom(id), newElement)
+        },
+})
+```
+
