@@ -18,7 +18,7 @@ This is the start of an [Exaclidraw](https://excalidraw.com/) clone that I am bu
 -   And more...
 
 
-### atomFamily
+### AtomFamily
 
 For example, you have list of elements. We want to avoid that single elemenet got changed, whole list got re-render. Also want to share the single element state to other component. We can use `atom` (for list) and `atomFmaily` (for each element)
 
@@ -51,3 +51,13 @@ export const elementAtom = atomFamily<Element, number>({
 
 const [element, setElement] = useRecoilState(elementAtom(id))
 ```
+
+
+### SelectorFamily
+
+Benefits of Selectors:
+
+* Get and Set logic combined
+* Same API as Atoms
+* Shareable, self-containaed state
+
