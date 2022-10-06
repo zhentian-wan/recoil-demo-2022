@@ -16,3 +16,38 @@ This is the start of an [Exaclidraw](https://excalidraw.com/) clone that I am bu
 -   🔑 Authentication
 -   🏃 Performance debugging, testing, and improvement
 -   And more...
+
+
+### atomFamily
+
+For example, you have list of elements. We want to avoid that single elemenet got changed, whole list got re-render. Also want to share the single element state to other component. We can use `atom` (for list) and `atomFmaily` (for each element)
+
+[PS] Using Redux with selector can also achieve this
+
+for the list itself, you can use `atom` to model it.
+
+for each elements in the list, can use `atomFamily`, it is a high order function which accept a param, for list of elements, the params would be the `id` of each element.
+
+It is easy to get each element by using `useRecoilState(elementAtom(id))`, and those state are shareable with other component.
+
+
+```tsx
+// list
+export const elementsAtom = atom<number[]>({
+    key: 'elementsState',
+    default: [],
+})
+
+// each element
+export const elementAtom = atomFamily<Element, number>({
+    key: 'elementState',
+    default: {
+        style: {
+            position: {top: 50, left: 50},
+            size: {width: 50, height: 50},
+        },
+    },
+})
+
+const [element, setElement] = useRecoilState(elementAtom(id))
+```
