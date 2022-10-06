@@ -1,89 +1,43 @@
 import {InputGroup, InputRightElement, NumberInput, NumberInputField, Text, VStack} from '@chakra-ui/react'
-import {selector, useRecoilState, useRecoilValue} from 'recoil'
+import {selectorFamily, useRecoilState, useRecoilValue} from 'recoil'
 import {selectElementAtom} from './Canvas'
-import {Element, elementAtom} from './components/Rectangle/Rectangle'
+import {elementAtom} from './components/Rectangle/Rectangle'
+import {get as lodash_get, set as lodash_set} from 'lodash'
+import produce from 'immer'
 
-export const elementPropertiesState = selector<Element | undefined>({
-    key: 'elementPropertiesState',
-    get: ({get}) => {
-        const selectedElement = get(selectElementAtom)
-        if (selectedElement == undefined) {
-            return
-        }
-        return get(elementAtom(selectedElement))
-    },
-    set: ({set, get}, newElement) => {
-        const selectedElement = get(selectElementAtom)
-        if (selectedElement == undefined) return
-        if (!newElement) return
-
-        set(elementAtom(selectedElement), newElement)
-    },
+export const editPropertiesState = selectorFamily<number, {path: string; id: number}>({
+    key: 'editPropertiesState',
+    get:
+        ({path, id}) =>
+        ({get}) => {
+            const element = get(elementAtom(id))
+            return lodash_get(element, path)
+        },
+    set:
+        ({path, id}) =>
+        ({get, set}, newValue) => {
+            const element = get(elementAtom(id))
+            const newElement = produce(element, (draft) => {
+                lodash_set(element, path, newValue)
+            })
+            set(elementAtom(id), newElement)
+        },
 })
 
 export const EditProperties = () => {
-    const [element, setElement] = useRecoilState(elementPropertiesState)
-    if (!element) return null
-
-    const setPosition = (property: 'top' | 'left', value: number) => {
-        setElement({
-            ...element,
-            style: {
-                ...element.style,
-                position: {
-                    ...element.style.position,
-                    [property]: value,
-                },
-            },
-        })
+    const selectedElement = useRecoilValue(selectElementAtom)
+    if (selectedElement == null) {
+        return null
     }
-
-    const setSize = (property: 'width' | 'height', value: number) => {
-        setElement({
-            ...element,
-            style: {
-                ...element.style,
-                size: {
-                    ...element.style.size,
-                    [property]: value,
-                },
-            },
-        })
-    }
-
     return (
         <Card>
             <Section heading="Position">
-                <Property
-                    label="Top"
-                    value={element.style.position.top}
-                    onChange={(top) => {
-                        setPosition('top', top)
-                    }}
-                />
-                <Property
-                    label="Left"
-                    value={element.style.position.left}
-                    onChange={(left) => {
-                        setPosition('left', left)
-                    }}
-                />
+                <Property id={selectedElement} label="Top" path="style.position.top" />
+                <Property id={selectedElement} label="Left" path="style.position.left" />
             </Section>
             <Section heading="Size">
-                <Property
-                    label="Width"
-                    value={element.style.size.width}
-                    onChange={(width) => {
-                        setSize('width', width)
-                    }}
-                />
-                <Property
-                    label="Height"
-                    value={element.style.size.height}
-                    onChange={(height) => {
-                        setSize('height', height)
-                    }}
-                />
+                <Property id={selectedElement} label="Width" path="style.size.width" />
+                <Property id={selectedElement} label="Height" path="style.size.height" />
             </Section>
         </Card>
     )
@@ -98,14 +52,15 @@ const Section: React.FC<{heading: string}> = ({heading, children}) => {
     )
 }
 
-const Property = ({label, value, onChange}: {label: string; value: number; onChange: (value: number) => void}) => {
+const Property = ({label, path, id}: {label: string; path: string; id: number}) => {
+    const [value, setValue] = useRecoilState(editPropertiesState({path, id}))
     return (
         <div>
             <Text fontSize="14px" fontWeight="500" mb="2px">
                 {label}
             </Text>
             <InputGroup size="sm" variant="filled">
-                <NumberInput value={value} onChange={(_, value) => onChange(value)}>
+                <NumberInput value={value} onChange={(_, value) => setValue(value)}>
                     <NumberInputField borderRadius="md" />
                     <InputRightElement pointerEvents="none" children="px" lineHeight="1" fontSize="12px" />
                 </NumberInput>
