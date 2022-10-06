@@ -61,6 +61,8 @@ Benefits of Selectors:
 * Same API as Atoms
 * Shareable, self-containaed state
 * Async data fetching
+  * Has caching built-in for the same params
+  * **Handle race condition for you when data fetching**
 
 Reaons to use `SelectorFamily`:
 
