@@ -67,7 +67,8 @@ Reaons to use `SelectorFamily`:
 * Similar concept as `factory`
 * The params should be `serialisable`
     * Recoil compare the param by `value` not by `reference`
-    * selectorFamily({id: 1}) === selectorFamily({id: 1})  
+    * selectorFamily({id: 1}) === selectorFamily({id: 1})
+    * ![Only fetch data once](./docs/same.png)
 
 ```tsx
 export const editPropertiesState = selectorFamily<number, {path: string; id: number}>({
