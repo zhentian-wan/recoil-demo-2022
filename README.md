@@ -60,6 +60,14 @@ Benefits of Selectors:
 * Get and Set logic combined
 * Same API as Atoms
 * Shareable, self-containaed state
+* Async data fetching
+
+Reaons to use `SelectorFamily`:
+
+* Similar concept as `factory`
+* The params should be `serialisable`
+    * Recoil compare the param by `value` not by `reference`
+    * selectorFamily({id: 1}) === selectorFamily({id: 1})  
 
 ```tsx
 export const editPropertiesState = selectorFamily<number, {path: string; id: number}>({
