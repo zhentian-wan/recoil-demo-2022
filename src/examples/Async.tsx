@@ -1,7 +1,8 @@
 import {Container, Heading, Text} from '@chakra-ui/layout'
 import {Select} from '@chakra-ui/select'
 import {Suspense, useState} from 'react'
-import {useRecoilValue, selectorFamily} from 'recoil'
+import {useRecoilValue, selectorFamily, atomFamily, useSetRecoilState} from 'recoil'
+import {getWeather} from './fakeAPI'
 
 const userState = selectorFamily({
     key: 'user',
@@ -10,6 +11,47 @@ const userState = selectorFamily({
         return userData
     },
 })
+
+const weatherState = selectorFamily({
+    key: 'weather',
+    get:
+        (userId: number) =>
+        async ({get}) => {
+            get(weatherRequestIdState(userId))
+            const user = get(userState(userId))
+            const weather = await getWeather(user.address.city)
+            return weather
+        },
+})
+
+// #region refetch
+/* Refetch request by using selector */
+// 1. create a request Id atom
+const weatherRequestIdState = atomFamily({
+    key: 'weatherRequestId',
+    default: 0,
+})
+// 2. create a custom hook to increase the request id
+const useRefetchWeather = (userId: number) => {
+    const setRequestId = useSetRecoilState(weatherRequestIdState(userId))
+    return () => setRequestId((id) => id + 1)
+}
+// 3. call get(weatherRequestIdState(userId)) in selectFamily where requrest need to be refetch
+// 4. Use useRefetchWeather(userId) hook
+// #endregion
+export const UserWeather = ({userId}: {userId: number}) => {
+    const weather = useRecoilValue(weatherState(userId))
+    const userData = useRecoilValue(userState(userId))
+    const refetch = useRefetchWeather(userId)
+    return (
+        <>
+            <Text>
+                <b>Weather for {userData.address.city}: </b> {weather} C
+            </Text>
+            <Text onClick={refetch}>(Refresh weather)</Text>
+        </>
+    )
+}
 
 export const UserData = ({userId}: {userId: number}) => {
     const userData = useRecoilValue(userState(userId))
@@ -24,6 +66,9 @@ export const UserData = ({userId}: {userId: number}) => {
             <Text>
                 <b>Phone:</b> {userData.phone}
             </Text>
+            <Suspense fallback={<span>Loading weather...</span>}>
+                <UserWeather userId={userId} />
+            </Suspense>
         </div>
     )
 }
