@@ -9,9 +9,11 @@ export const Toolbar = () => {
     const elements = useRecoilValue(elementsAtom)
     const newId = elements.length
     const insertElement = useRecoilCallback(({set}) => (type: 'rectangle' | 'image') => {
+        // add a new rectangle into the list
         set(elementsAtom, (elements) => [...elements, elements.length])
 
         if (type === 'image') {
+            // newId will be the newly added rectangle
             set(elementAtom(newId), {
                 style: defaultStyle,
                 image: getRandomImage(),

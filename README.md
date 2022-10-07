@@ -141,3 +141,30 @@ export const UserWeather = ({userId}: {userId: number}) => {
     )
 }
 ```
+
+### UseRecoilCallback
+
+In a case that when we add a new item into list, by the same time, we want to upate the newly added item.
+
+In this project, we have element list, when we add a new image rectangle, we want to push a new rectangle into the list, then update that new rectangle to set image prop.
+
+The problem is by the time we add new rectangle intot the list, we don't have rectangle instance yet. Therefore we cannot set image prop.
+
+`useRecoilCallback(({set, get}) => (param) => {...})`
+
+```tsx
+    const elements = useRecoilValue(elementsAtom)
+    const newId = elements.length
+    const insertElement = useRecoilCallback(({set}) => (type: 'rectangle' | 'image') => {
+        // add a new rectangle into the list
+        set(elementsAtom, (elements) => [...elements, elements.length])
+
+        if (type === 'image') {
+            // newId will be the newly added rectangle
+            set(elementAtom(newId), {
+                style: defaultStyle,
+                image: getRandomImage(),
+            })
+        }
+    })
+```
