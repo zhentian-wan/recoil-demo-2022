@@ -168,3 +168,22 @@ The problem is by the time we add new rectangle intot the list, we don't have re
         }
     })
 ```
+
+[PS] found this solution also works
+
+```tsx
+    const [elements, setElements] = useRecoilState(elementsAtom)
+    const newId = elements.length
+    const [_, setNewElement] = useRecoilState(elementAtom(newId))
+    function setNewItem(type: 'rectangle' | 'image') {
+        setElements((els) => [...els, els.length])
+        if (type === 'image') {
+            // newId will be the newly added rectangle
+            setNewElement((el) => ({
+                ...el,
+                style: defaultStyle,
+                image: getRandomImage(),
+            }))
+        }
+    }
+```

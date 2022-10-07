@@ -1,6 +1,6 @@
 import {Icon, IconButton, VStack} from '@chakra-ui/react'
 import {Image, Square} from 'react-feather'
-import {useRecoilCallback, useRecoilValue, useSetRecoilState} from 'recoil'
+import {useRecoilCallback, useRecoilValue} from 'recoil'
 import {elementsAtom} from './Canvas'
 import {defaultStyle, elementAtom} from './components/Rectangle/Rectangle'
 import {getRandomImage} from './util'
@@ -20,6 +20,7 @@ export const Toolbar = () => {
             })
         }
     })
+
     return (
         <VStack
             position="absolute"
