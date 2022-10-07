@@ -87,7 +87,7 @@ export const editPropertiesState = selectorFamily<number, {path: string; id: num
         ({get, set}, newValue) => {
             const element = get(elementAtom(id))
             const newElement = produce(element, (draft) => {
-                lodash_set(element, path, newValue)
+                lodash_set(draft, path, newValue)
             })
             set(elementAtom(id), newElement)
         },
