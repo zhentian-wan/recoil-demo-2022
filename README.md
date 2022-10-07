@@ -96,7 +96,7 @@ export const editPropertiesState = selectorFamily<number, {path: string; id: num
 
 ### How to refetch data by using selector/selectorFamily
 
-![Example](src/examples/Async.tsx)
+[Example](src/examples/Async.tsx)
 
 ```tsx
 const weatherState = selectorFamily({
