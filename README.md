@@ -224,7 +224,7 @@ C is an async call which deps on B that deps on A. Need to ask youself,
 * whether it is possible that B was triggered too many times because of A?
 
 ```diff 
-+const imageIdState = selector({
++ const imageIdState = selector({
 +    key: 'imageId',
 +    get: ({get}) => {
 +        const id = get(selectElementAtom)
