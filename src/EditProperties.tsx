@@ -4,6 +4,8 @@ import {selectElementAtom} from './Canvas'
 import {elementAtom} from './components/Rectangle/Rectangle'
 import {get as lodash_get, set as lodash_set} from 'lodash'
 import produce from 'immer'
+import {Suspense} from 'react'
+import {ImageInfo, ImageInfoFallback} from './components/ImageInfo'
 
 export const editPropertiesState = selectorFamily<any, {path: string; id: number}>({
     key: 'editPropertiesState',
@@ -38,6 +40,11 @@ export const EditProperties = () => {
             <Section heading="Size">
                 <Property id={selectedElement} label="Width" path="style.size.width" />
                 <Property id={selectedElement} label="Height" path="style.size.height" />
+            </Section>
+            <Section heading="Image">
+                <Suspense fallback={<ImageInfoFallback />}>
+                    <ImageInfo></ImageInfo>
+                </Suspense>
             </Section>
         </Card>
     )

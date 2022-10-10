@@ -187,3 +187,67 @@ The problem is by the time we add new rectangle intot the list, we don't have re
         }
     }
 ```
+
+### Intermediate Selectors
+
+What is the problem for the following code? 
+
+
+```ts
+const imageInfoState = selector({
+    key: 'imageInfoState',
+    get: ({get}) => {
+        const id = get(selectElementAtom)
+        if (id === null) return
+
+        const element = get(elementAtom(id))
+        return element.image?.id
+        if (imageId === undefined) return
+
+        return callApi('image-details', {queryParams: {seed: imageId}})
+    },
+})
+```
+
+🚨 Need to be sensitive when you see this partten:
+
+
+```ts
+const a = get(Aatom)
+const b = get(Batom(a))
+const c = asyncCall(b)
+```
+
+C is an async call which deps on B that deps on A. Need to ask youself, 
+
+* whether it is possible that C was triggered too many times because of B?
+* whether it is possible that B was triggered too many times because of A?
+
+```diff 
++const imageIdState = selector({
++    key: 'imageId',
++    get: ({get}) => {
++        const id = get(selectElementAtom)
++        if (id === null) return
++
++        const element = get(elementAtom(id))
++        return element.image?.id
++    },
++ })
+
+
+const imageInfoState = selector({
+    key: 'imageInfoState',
+    get: ({get}) => {
+-        const id = get(selectElementAtom)
+-        if (id === null) return
+-
+-        const element = get(elementAtom(id))
++        const imageId = get(imageIdState)
+        if (imageId === undefined) return
+
+        return callApi('image-details', {queryParams: {seed: imageId}})
+    },
+})
+```
+
