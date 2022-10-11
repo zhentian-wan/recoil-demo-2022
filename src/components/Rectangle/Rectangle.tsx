@@ -38,6 +38,7 @@ export const Rectangle = ({id}: {id: number}) => {
             }}
         >
             <Resize
+                lockAspectRatio={element.image !== undefined}
                 selected={selected}
                 position={element.style.position}
                 size={element.style.size}

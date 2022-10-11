@@ -28,6 +28,7 @@ const imageInfoState = selector({
 
 export const ImageInfo = () => {
     const imageInfo = useRecoilValue(imageInfoState)
+    if (!imageInfo) return null
     return (
         <VStack spacing={2} alignItems="flex-start" width="100%">
             <Info label="Author" value={imageInfo.author} />
