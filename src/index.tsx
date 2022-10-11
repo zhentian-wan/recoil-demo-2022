@@ -11,6 +11,7 @@ import {Async} from './examples/Async'
 import {AtomEffects} from './examples/AtomEffect'
 import {AtomFamilyEffects} from './examples/AtomFamilyEffect'
 import {AsyncEffects} from './examples/AsyncEffect'
+import {AsyncEffects2} from './examples/AsyncEffect2'
 
 ReactDOM.render(
     <React.StrictMode>
@@ -36,6 +37,11 @@ ReactDOM.render(
                         <Route path="/examples/asynceffect">
                             <Suspense fallback={<div>Loading...</div>}>
                                 <AsyncEffects />
+                            </Suspense>
+                        </Route>
+                        <Route path="/examples/asynceffect2">
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <AsyncEffects2 />
                             </Suspense>
                         </Route>
                         <Route>
