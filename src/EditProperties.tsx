@@ -26,6 +26,38 @@ export const editPropertiesState = selectorFamily<any, {path: string; id: number
         },
 })
 
+export const editSize = selectorFamily<any, {dimension: 'width' | 'height'; id: number}>({
+    key: 'editSize',
+    get:
+        ({dimension, id}) =>
+        ({get}) => {
+            return get(editPropertiesState({path: `style.size.${dimension}`, id}))
+        },
+    set:
+        ({dimension, id}) =>
+        ({set, get}, newValue) => {
+            const hasImage = get(editPropertiesState({path: 'image', id})) !== undefined
+            if (!hasImage) {
+                set(editPropertiesState({path: `style.size.${dimension}`, id}), newValue)
+                return
+            }
+            const size = editPropertiesState({path: `style.size`, id})
+            const {width, height} = get(size)
+            const aspectRatio = width / height
+            if (dimension === 'width') {
+                set(size, {
+                    width: newValue,
+                    height: Math.round(newValue / aspectRatio),
+                })
+            } else {
+                set(size, {
+                    height: newValue,
+                    width: Math.round(newValue * aspectRatio),
+                })
+            }
+        },
+})
+
 export const EditProperties = () => {
     const selectedElement = useRecoilValue(selectElementAtom)
     if (selectedElement == null) {
@@ -38,8 +70,8 @@ export const EditProperties = () => {
                 <Property id={selectedElement} label="Left" path="style.position.left" />
             </Section>
             <Section heading="Size">
-                <Property id={selectedElement} label="Width" path="style.size.width" />
-                <Property id={selectedElement} label="Height" path="style.size.height" />
+                <SizeProperty id={selectedElement} label="Width" dimension="width" />
+                <SizeProperty id={selectedElement} label="Height" dimension="height" />
             </Section>
             <Section heading="Image">
                 <Suspense fallback={<ImageInfoFallback />}>
@@ -61,13 +93,22 @@ const Section: React.FC<{heading: string}> = ({heading, children}) => {
 
 const Property = ({label, path, id}: {label: string; path: string; id: number}) => {
     const [value, setValue] = useRecoilState(editPropertiesState({path, id}))
+    return <PropertyInput value={value} label={label} onChange={setValue}></PropertyInput>
+}
+
+const SizeProperty = ({label, dimension, id}: {label: string; dimension: 'width' | 'height'; id: number}) => {
+    const [value, setValue] = useRecoilState(editSize({dimension, id}))
+    return <PropertyInput value={value} label={label} onChange={setValue}></PropertyInput>
+}
+
+const PropertyInput = ({label, value, onChange}: {label: string; value: number; onChange: (value: number) => void}) => {
     return (
         <div>
             <Text fontSize="14px" fontWeight="500" mb="2px">
                 {label}
             </Text>
             <InputGroup size="sm" variant="filled">
-                <NumberInput value={value} onChange={(_, value) => setValue(value)}>
+                <NumberInput value={value} onChange={(_, value) => onChange(value)}>
                     <NumberInputField borderRadius="md" />
                     <InputRightElement pointerEvents="none" children="px" lineHeight="1" fontSize="12px" />
                 </NumberInput>
