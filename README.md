@@ -409,7 +409,8 @@ export const EditProperties = () => {
         </Card>
     )
 }
-
 ```
+
+Make `PropertyInput` as a dump component, and two samrt compoents: `Property` & `SizeProperty`. So that we can reuse dump component inside smart components.
 
 
