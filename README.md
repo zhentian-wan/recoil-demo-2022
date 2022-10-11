@@ -414,3 +414,51 @@ export const EditProperties = () => {
 Make `PropertyInput` as a dump component, and two samrt compoents: `Property` & `SizeProperty`. So that we can reuse dump component inside smart components.
 
 
+### Async selector or Atom Effect?
+
+Example of async selector:
+
+```tsx
+const userState = selectorFamily({
+    key: 'user',
+    get: (userId: number) => async () => {
+        const userData = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((res) => res.json())
+        return userData
+    },
+})
+```
+
+Idea of async selector is the same input always get the same output. So if userId won't change, the fetched result won't change.
+
+If the passing `userId` will change overtime, then use `Atom effect`.
+
+Example of atom effect:
+
+```tsx
+const itemState = atomFamily<ItemType, number>({
+    key: 'item',
+    default: {label: '', checked: false},
+    effects_UNSTABLE: (id) => [
+        ({onSet, setSelf, trigger}) => {
+            setSelf(cachedAPI.getItem(id))
+
+            cachedAPI.onRefresh((newItem) => {
+                console.log('item changes', newItem)
+                setSelf(newItem)
+            })
+
+            onSet((item, oldItem) => {
+                // avoid unnecessary onSet calls
+                if (oldItem instanceof DefaultValue && trigger === 'get') return
+
+                if (item instanceof DefaultValue) {
+                    shoppingListAPI.deleteItem(id)
+                } else {
+                    shoppingListAPI.createOrUpdateItem(id, item)
+                }
+            })
+        },
+    ],
+})
+```
+
