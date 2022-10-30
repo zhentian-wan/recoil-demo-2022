@@ -150,7 +150,7 @@ In this project, we have element list, when we add a new image rectangle, we wan
 
 The problem is by the time we add new rectangle intot the list, we don't have rectangle instance yet. Therefore we cannot set image prop.
 
-`useRecoilCallback(({set, get}) => (param) => {...})`
+`useRecoilCallback(({set, snapshot}) => (param) => {...})`
 
 ```tsx
     const elements = useRecoilValue(elementsAtom)
